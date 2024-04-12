@@ -34,10 +34,13 @@ static int  plex  = 0;               /* current index lexeme  buffer  */
 /* Read the input file into the buffer                                */
 /**********************************************************************/
 
-static void get_prog()
-{
-   printf("\n *** TO BE DONE");
-   }     
+static void get_prog(){
+    printf("\n************************************************************");
+    printf("\n  THE PROGRAM TEXT");
+    printf("\n************************************************************");
+    printf("\n%s", buffer);
+    printf("\n************************************************************");   
+}     
 
 /**********************************************************************/
 /* Display the buffer                                                 */
