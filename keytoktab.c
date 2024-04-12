@@ -123,7 +123,6 @@ toktyp key2tok(char * fplex){
 
 	int tsize = sizeof(keywordtab) / sizeof(tab);
 
-
 	for(int i = 0; i < tsize;i++){
 		if(!strcmp(fplex,keywordtab[i].text)){
 			return keywordtab[i].token;
