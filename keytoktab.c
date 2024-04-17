@@ -92,8 +92,8 @@ void p_toktab(){
 /**********************************************************************/
 toktyp lex2tok(char * fplex){
 
-	int ksize = sizeof(tokentab) / sizeof(tab) - 1;
-	int tsize = sizeof(keywordtab) / sizeof(tab) - 1;
+	int ksize = sizeof(tokentab) / sizeof(tab);
+	int tsize = sizeof(keywordtab) / sizeof(tab);
 
 	// *** Check if number *** //
 	if(fplex[0] <= 48 && fplex[0] >= 57){
@@ -137,8 +137,8 @@ toktyp key2tok(char * fplex){
 /**********************************************************************/
 char * tok2lex(toktyp ftok){
 
-	int ksize = sizeof(tokentab) / sizeof(tab) - 1;
-	int tsize = sizeof(keywordtab) / sizeof(tab) - 1;
+	int ksize = sizeof(tokentab) / sizeof(tab);
+	int tsize = sizeof(keywordtab) / sizeof(tab);
 
 
 	// *** Check for token *** //
