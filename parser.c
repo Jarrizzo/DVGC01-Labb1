@@ -1,3 +1,4 @@
+//Laborant Isak Nilsson, 2024-04
 /**********************************************************************/
 /* lab 1 DVG C01 - Parser OBJECT                                      */
 /**********************************************************************/
@@ -8,6 +9,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdbool.h>
 
 /**********************************************************************/
 /* Other OBJECT's METHODS (IMPORTED)                                  */
@@ -15,38 +17,43 @@
 #include "keytoktab.h"          /* when the keytoktab is added   */
 #include "lexer.h"              /* when the lexer     is added   */
 #include "symtab.h"             /* when the symtab    is added   */
-/* #include "optab.h"       */       /* when the optab     is added   */
+#include "optab.h"              /* when the optab     is added   */
 
 /**********************************************************************/
 /* OBJECT ATTRIBUTES FOR THIS OBJECT (C MODULE)                       */
 /**********************************************************************/
 #define DEBUG 0
 static int  lookahead=0;
-static int  is_parse_ok=1;
+static int  is_parse_ok=true;
 
 /**********************************************************************/
-/* RAPID PROTOTYPING - simulate the token stream & lexer (get_token)  */
+/* Declerations                                                       */
 /**********************************************************************/
-/* define tokens + keywords NB: remove this when keytoktab.h is added */
-/**********************************************************************/
-//enum tvalues { program = 257, id, input, output,var,integer,begin,end };
-/**********************************************************************/
-/* Simulate the token stream for a given program                      */
-/**********************************************************************/
-/* static int tokens[] = {program, id, '(', input, ',', output, ')', ';',
-                     var,id,',',id,',',id,':',integer,';',
-                     begin,
-                     id,assign,id,'+',id,'*',number,
-                     end,'.',
-                     '$' }; */
+// *** Var Part *** //
+static void var_part();
+static void var_dec_list();
+static void var_dec();
+static void id_list();
+static void type();
+// *** Stat Part *** //
+static void stat_part();
+static void stat_list();
+static void stat();
+static void assign_stat();
+static toktyp expr();
+static toktyp term();
+static toktyp factor();
+static toktyp operand();
+// *** Error Handling *** //
+static void error_id();
+static void error_symbol();
+static void error_operand();
+static void error_type();
+static void error_undec();
+static void error_dupl();
+static void error_asign();
+static void error_emptyFile();
 
-/**********************************************************************/
-/*  Simulate the lexer -- get the next token from the buffer          */
-/**********************************************************************/
-/* static int pget_token(){  
-   static int i=0;
-   if (tokens[i] != '$') return tokens[i++]; else return '$';
-} */
 
 /**********************************************************************/
 /*  PRIVATE METHODS for this OBJECT  (using "static" in C)            */
@@ -65,58 +72,81 @@ static void match(int t){
       }
 }
 
+
+
 /**********************************************************************/
 /* The grammar functions                                              */
 /**********************************************************************/
 
-
-
-
 static void program_header(){
    if (DEBUG) printf("\n *** In  program_header");
    match(program);
-   addp_name(get_lexeme());
-   match(id); 
+   if(lookahead == id){
+      addp_name(get_lexeme());
+      match(id); 
+   }
+   else{
+      error_id();
+      addp_name("Error");
+   }
    match('('); 
    match(input);
    match(','); 
    match(output); 
    match(')'); 
    match(';');
-}   
+}
 
-/***********VAR PART***********/
-
-static void var_part();
-static void var_dec_list();
-static void var_dec();
-static void id_list();
-static void type();
+/***************  VAR PART  ***************/
 
 static void var_part(){
    if(DEBUG) printf("\n *** In var_part");
+   if(lookahead == var){
    match(var);
+   }
+   else{
+      error_symbol("var");
+   }
    var_dec_list();
 }
 static void var_dec_list(){
    if(DEBUG){printf("\n *** In var_dec_list");}
    var_dec();
-   if (lookahead == id) 
+   if (lookahead == id){
       var_dec_list();
+   }
 }
 static void var_dec(){
    if(DEBUG){printf("\n *** In var_dec");}
    id_list();
-   match(':');
+   if(lookahead == ':'){
+      match(':');
+   }
+   else{
+      error_symbol(":");
+   }
    type();
-   match(';');
+   if(lookahead == ';'){
+      match(';');
+   }
+   else{
+      error_symbol(";");
+   }
 }
 static void id_list(){
    if(DEBUG){printf("\n *** In id_list");}
 
    if(lookahead == id){
-      addv_name(get_lexeme());
+      if(!find_name(get_lexeme())){
+         addv_name(get_lexeme());
+      }
+      else{
+         error_dupl();
+      }
       match(id);
+   }
+   else{
+      error_id();
    }
    if (lookahead == ','){
       match(',');
@@ -139,20 +169,12 @@ static void type(){
       match(boolean);
    }
    else{
+      error_type();
       setv_type(error);
    }
-   
 }
 
-/***********STAT PART***********/
-static void stat_part();
-static void stat_list();
-static void stat();
-static void assign_stat();
-static toktyp expr();
-static toktyp term();
-static toktyp factor();
-static toktyp operand();
+/***************  STAT PART  ***************/
 
 static void stat_part(){
    if(DEBUG)   printf("\n ***In stat_part");
@@ -224,6 +246,42 @@ static toktyp operand(){
       return error;
    }
 }
+/***************  Error Handling  ***************/
+// *** SYNTAX ERRORS ***//
+static void error_id(){
+   printf("\nSYNTAX ERROR: \"ID\" expected, Found %s",get_lexeme());
+   is_parse_ok = false;
+}
+static void error_symbol(char * s){
+   printf("\nSYNTAX ERROR: expected \"symbol(%s)\", Found %s",s,get_lexeme());
+   is_parse_ok = false;
+}
+static void error_operand(){
+   printf("\nSYNTAX ERROR: expected \"Operand\"");
+   is_parse_ok = false;
+}
+static void error_type(){
+   printf("\nSYNTAX ERROR: expected \"Type name\", Found %s",get_lexeme());
+   is_parse_ok = false;
+}
+static void error_emptyFile(){
+   printf("SYNTAX ERROR: Inputfile is empty");
+   is_parse_ok = false;
+}
+// *** SEMANTIC ERRORS ***//
+static void error_undec(){
+   printf("\nSEMANTIC ERROR: \"ID not declared\", %s",get_lexeme());
+   is_parse_ok = false;
+}
+static void error_dupl(){
+   printf("\nSEMANTIC ERROR: \"ID already declared\", %s",get_lexeme());
+   is_parse_ok = false;
+}
+static void error_asign(char * l, char * r){
+   printf("SEMATIC ERROR: \"%s\" cant := \"%s\"",l,r);
+   is_parse_ok = false;
+}
+
 
 /**********************************************************************/
 /*  PUBLIC METHODS for this OBJECT  (EXPORTED)                        */
