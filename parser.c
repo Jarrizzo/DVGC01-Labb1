@@ -53,6 +53,8 @@ static void error_undec();
 static void error_dupl();
 static void error_asign();
 static void error_emptyFile();
+static void erro_afterParse();
+
 
 
 /**********************************************************************/
@@ -178,32 +180,89 @@ static void type(){
 
 static void stat_part(){
    if(DEBUG)   printf("\n ***In stat_part");
-   match(begin);
+   if(lookahead == begin){
+      match(begin);
+   }
+   else{
+      error_symbol("begin");
+   }
+
    stat_list();
-   match(end);
-   match('.');
+
+   if(lookahead == end){
+      match(end);
+   }
+   else{
+      error_symbol("end");
+   }
+
+   if(lookahead == '.'){
+      match('.');
+   }
+   else{
+      error_symbol(".");
+   }
+
+   if(lookahead != '$'){
+      erro_afterParse();
+      while(lookahead != '$'){
+         printf("%s \t",get_lexeme(lookahead));
+         match(lookahead);
+      }
+   }
+
 }
 static void stat_list(){
    stat(); 
    if (lookahead == ';'){
       match(';'); 
-      stat_list(); 
    }
+   else{
+      error_symbol(";");         // *** MABY? *** //
+   }
+   stat_list(); 
+
 }
 static void stat(){
+   if(DEBUG){printf("\n *** In stat");}
    assign_stat();
 }
 static void assign_stat(){
+   if(DEBUG){printf("\n *** In assign stat");}
+
+   toktyp rightNum,leftNum = error;
+
+   if(lookahead == id){
+      if(!find_name(get_lexeme())){
+         error_undec();
+      }
+      else{
+         leftNum = get_ntype(get_lexeme());
+      }
    match(id);
+   }
+   else{
+      error_id();
+   }
+   if(lookahead == assign){
    match(assign);
-   expr();
+   }
+   else{
+      error_symbol(":=");
+   }
+   rightNum = expr();
+
+   if(leftNum != rightNum){
+      error_asign(tok2lex(leftNum),tok2lex(rightNum));
+   }
+
 }
 static toktyp expr(){
    if(DEBUG){printf("\n *** In expr");}
    toktyp tmp = term();
    if(lookahead == '+'){
       match('+');
-      tmp += expr();
+      tmp = get_otype('+',tmp,expr());
    }
    return tmp;
 }
@@ -212,7 +271,7 @@ static toktyp term(){
 
    if(lookahead == '*'){
       match('*');
-      tmp *= term();
+      tmp = get_otype('*',tmp,term());
    }
    return tmp;
 }
@@ -234,15 +293,18 @@ static toktyp operand(){
    if(DEBUG){printf("\n *** In Opernad");}
 
    if(lookahead == id){
+      if(!find_name(get_lexeme())){
+         error_undec();
+      }
       match(id);
-      return id;
+      return get_ntype(get_lexeme());
    }
    else if(lookahead == number){
       match(number);
       return number;
    }
    else{
-      printf("\n Incompatible operand!");
+      error_operand();
       return error;
    }
 }
@@ -268,6 +330,10 @@ static void error_emptyFile(){
    printf("SYNTAX ERROR: Inputfile is empty");
    is_parse_ok = false;
 }
+static void erro_afterParse(){
+   printf("SYNTAX ERROR: Symbols existing after parse ending");
+   is_parse_ok = false;
+}
 // *** SEMANTIC ERRORS ***//
 static void error_undec(){
    printf("\nSEMANTIC ERROR: \"ID not declared\", %s",get_lexeme());
@@ -290,6 +356,10 @@ static void error_asign(char * l, char * r){
 int parser(){
    if (DEBUG) printf("\n *** In  parser");
    lookahead = get_token();       // get the first token
+   if(lookahead == '$' || lookahead < 0){
+      error_emptyFile();
+      return is_parse_ok;
+   }
    program_header();               // call the first grammar rule
    var_part();
    stat_part();
