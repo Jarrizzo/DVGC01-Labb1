@@ -1,0 +1,6 @@
+To compile --
+    gcc -Wall -o parser driver.c parser.c keytoktab.c lexer.c symtab.c optab.c
+
+To run -- 
+    make    or...
+    ./parser <(The testfile to be used)
