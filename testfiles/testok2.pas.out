@@ -1,0 +1,46 @@
+program testok2(input, output);
+var A, B, C: integer;  
+    D, E, F: integer;
+    G, H, I: integer;
+
+begin
+A := B + C * 2;
+D := E + F * 2;
+G := H + I * 2
+end.
+
+________________________________________________________ 
+ THE PROGRAM TEXT
+________________________________________________________ 
+program testok2(input, output);
+var A, B, C: integer;  
+    D, E, F: integer;
+    G, H, I: integer;
+
+begin
+A := B + C * 2;
+D := E + F * 2;
+G := H + I * 2
+end.
+$
+________________________________________________________ 
+PARSE SUCCESSFUL! 
+________________________________________________________ 
+________________________________________________________ 
+ THE SYMBOL TABLE
+________________________________________________________ 
+       NAME       ROLE       TYPE      SIZE      ADDR     
+________________________________________________________ 
+    testok2    program    program        36         0 
+          A        var    integer         4         0 
+          B        var    integer         4         4 
+          C        var    integer         4         8 
+          D        var    integer         4        12 
+          E        var    integer         4        16 
+          F        var    integer         4        20 
+          G        var    integer         4        24 
+          H        var    integer         4        28 
+          I        var    integer         4        32 
+________________________________________________________ 
+ STATIC STORAGE REQUIRED is 36 BYTES
+________________________________________________________ 

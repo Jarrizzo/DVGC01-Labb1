@@ -53,7 +53,7 @@ static void error_undec();
 static void error_dupl();
 static void error_asign();
 static void error_emptyFile();
-static void erro_afterParse();
+static void error_afterParse();
 
 
 
@@ -66,9 +66,11 @@ static void erro_afterParse();
 /**********************************************************************/
 static void match(int t){
    if(DEBUG) printf("\n --------In match expected: %4s, found: %4s",tok2lex(t), tok2lex(lookahead));
-   if (lookahead == t) lookahead = get_token();
+   if (lookahead == t){
+      lookahead = get_token();
+   } 
    else {
-      is_parse_ok=0;
+      is_parse_ok = false;
       printf("\n *** Unexpected Token: expected: %4s found: %4s (in match)",
               tok2lex(t), tok2lex(lookahead));
       }
@@ -82,7 +84,12 @@ static void match(int t){
 
 static void program_header(){
    if (DEBUG) printf("\n *** In  program_header");
+   if(lookahead == program){
    match(program);
+   }
+   else{
+      error_symbol("Program");
+   }
    if(lookahead == id){
       addp_name(get_lexeme());
       match(id); 
@@ -91,12 +98,12 @@ static void program_header(){
       error_id();
       addp_name("Error");
    }
-   match('('); 
-   match(input);
-   match(','); 
-   match(output); 
-   match(')'); 
-   match(';');
+   if(lookahead == '('){match('(');}   else{error_symbol("(");}
+   if(lookahead == input){match(input);}   else{error_symbol("input");}
+   if(lookahead == ','){match(',');}   else{error_symbol(",");}
+   if(lookahead == output){match(output);}   else{error_symbol("output");}
+   if(lookahead == ')'){match(')');}   else{error_symbol(")");}
+   if(lookahead == ';'){match(';');}   else{error_symbol(";");}
 }
 
 /***************  VAR PART  ***************/
@@ -204,24 +211,23 @@ static void stat_part(){
    }
 
    if(lookahead != '$'){
-      erro_afterParse();
+      error_afterParse();
+      printf(" -->, \" ");
       while(lookahead != '$'){
-         printf("%s \t",get_lexeme(lookahead));
+         printf("%s ",get_lexeme(lookahead));
          match(lookahead);
       }
+      printf("\" ");
    }
 
 }
 static void stat_list(){
+   if(DEBUG)   printf("\n ***In stat_list");
    stat(); 
    if (lookahead == ';'){
       match(';'); 
+      stat_list(); 
    }
-   else{
-      error_symbol(";");         // *** MABY? *** //
-   }
-   stat_list(); 
-
 }
 static void stat(){
    if(DEBUG){printf("\n *** In stat");}
@@ -230,7 +236,8 @@ static void stat(){
 static void assign_stat(){
    if(DEBUG){printf("\n *** In assign stat");}
 
-   toktyp rightNum,leftNum = error;
+   toktyp rightNum;
+   toktyp leftNum = error;
 
    if(lookahead == id){
       if(!find_name(get_lexeme())){
@@ -238,6 +245,7 @@ static void assign_stat(){
       }
       else{
          leftNum = get_ntype(get_lexeme());
+         if (DEBUG){printf("\nLeft-hand side type: %s", tok2lex(leftNum));}
       }
    match(id);
    }
@@ -251,6 +259,7 @@ static void assign_stat(){
       error_symbol(":=");
    }
    rightNum = expr();
+   if(DEBUG){    printf("\nRight-hand side type: %s", tok2lex(rightNum));}
 
    if(leftNum != rightNum){
       error_asign(tok2lex(leftNum),tok2lex(rightNum));
@@ -268,7 +277,6 @@ static toktyp expr(){
 }
 static toktyp term(){
    toktyp tmp = factor();
-
    if(lookahead == '*'){
       match('*');
       tmp = get_otype('*',tmp,term());
@@ -296,12 +304,13 @@ static toktyp operand(){
       if(!find_name(get_lexeme())){
          error_undec();
       }
+      toktyp retValue = get_ntype(get_lexeme());
       match(id);
-      return get_ntype(get_lexeme());
+      return retValue;
    }
    else if(lookahead == number){
       match(number);
-      return number;
+      return integer;
    }
    else{
       error_operand();
@@ -315,7 +324,7 @@ static void error_id(){
    is_parse_ok = false;
 }
 static void error_symbol(char * s){
-   printf("\nSYNTAX ERROR: expected \"symbol(%s)\", Found %s",s,get_lexeme());
+   printf("\nSYNTAX ERROR: expected symbol \"%s\", Found \"%s\"",s,get_lexeme());
    is_parse_ok = false;
 }
 static void error_operand(){
@@ -323,28 +332,28 @@ static void error_operand(){
    is_parse_ok = false;
 }
 static void error_type(){
-   printf("\nSYNTAX ERROR: expected \"Type name\", Found %s",get_lexeme());
+   printf("\nSYNTAX ERROR: expected \"Type name\", Found \"%s\"",get_lexeme());
    is_parse_ok = false;
 }
 static void error_emptyFile(){
-   printf("SYNTAX ERROR: Inputfile is empty");
+   printf("\nSYNTAX ERROR: Inputfile is empty");
    is_parse_ok = false;
 }
-static void erro_afterParse(){
-   printf("SYNTAX ERROR: Symbols existing after parse ending");
+static void error_afterParse(){
+   printf("\nSYNTAX ERROR: Symbols existing after parse ");
    is_parse_ok = false;
 }
 // *** SEMANTIC ERRORS ***//
 static void error_undec(){
-   printf("\nSEMANTIC ERROR: \"ID not declared\", %s",get_lexeme());
+   printf("\nSEMANTIC ERROR: \"ID not declared\"--> %s",get_lexeme());
    is_parse_ok = false;
 }
 static void error_dupl(){
-   printf("\nSEMANTIC ERROR: \"ID already declared\", %s",get_lexeme());
+   printf("\nSEMANTIC ERROR: \"ID already declared\"--> %s",get_lexeme());
    is_parse_ok = false;
 }
 static void error_asign(char * l, char * r){
-   printf("SEMATIC ERROR: \"%s\" cant := \"%s\"",l,r);
+   printf("\nSEMANTIC ERROR: Type: \"%s\" cant be assigned to Type: \"%s\"",l,r);
    is_parse_ok = false;
 }
 

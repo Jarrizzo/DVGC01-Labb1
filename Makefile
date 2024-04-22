@@ -7,5 +7,5 @@ make:driver.c parser.c
 	gcc -Wall -c optab.c
 
 	gcc -Wall -o parser driver.c parser.c keytoktab.c lexer.c symtab.c optab.c
-
-	./parser <testok1.pas
+	clear
+	./parser <testfiles/fun5.pas

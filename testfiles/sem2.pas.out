@@ -1,0 +1,33 @@
+program sem2(input, output);
+var A, B, A: integer;
+
+begin
+A := B + C * 2
+end.
+
+________________________________________________________ 
+ THE PROGRAM TEXT
+________________________________________________________ 
+program sem2(input, output);
+var A, B, A: integer;
+
+begin
+A := B + C * 2
+end.
+$
+________________________________________________________ 
+SEMANTIC: ID already declared: A
+SEMANTIC: ID NOT declared: C
+SEMANTIC: Assign types: integer := undef
+________________________________________________________ 
+________________________________________________________ 
+ THE SYMBOL TABLE
+________________________________________________________ 
+       NAME       ROLE       TYPE      SIZE      ADDR     
+________________________________________________________ 
+       sem2    program    program         8         0 
+          A        var    integer         4         0 
+          B        var    integer         4         4 
+________________________________________________________ 
+ STATIC STORAGE REQUIRED is 8 BYTES
+________________________________________________________ 

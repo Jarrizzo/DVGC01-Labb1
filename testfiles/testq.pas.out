@@ -1,0 +1,33 @@
+program testq (input, output);
+var A, B, C: integer;
+
+begin
+ := B + C * 2  
+end.
+
+________________________________________________________ 
+ THE PROGRAM TEXT
+________________________________________________________ 
+program testq (input, output);
+var A, B, C: integer;
+
+begin
+ := B + C * 2  
+end.
+$
+________________________________________________________ 
+SYNTAX:   ID expected found := 
+SEMANTIC: Assign types: error := integer
+________________________________________________________ 
+________________________________________________________ 
+ THE SYMBOL TABLE
+________________________________________________________ 
+       NAME       ROLE       TYPE      SIZE      ADDR     
+________________________________________________________ 
+      testq    program    program        12         0 
+          A        var    integer         4         0 
+          B        var    integer         4         4 
+          C        var    integer         4         8 
+________________________________________________________ 
+ STATIC STORAGE REQUIRED is 12 BYTES
+________________________________________________________ 

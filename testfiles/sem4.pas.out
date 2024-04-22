@@ -1,0 +1,37 @@
+program sem4(input, output);
+var A, B, C: integer;
+    D, E, F: real;
+
+begin
+F := B + C * 2
+end.
+
+________________________________________________________ 
+ THE PROGRAM TEXT
+________________________________________________________ 
+program sem4(input, output);
+var A, B, C: integer;
+    D, E, F: real;
+
+begin
+F := B + C * 2
+end.
+$
+________________________________________________________ 
+SEMANTIC: Assign types: real := integer
+________________________________________________________ 
+________________________________________________________ 
+ THE SYMBOL TABLE
+________________________________________________________ 
+       NAME       ROLE       TYPE      SIZE      ADDR     
+________________________________________________________ 
+       sem4    program    program        36         0 
+          A        var    integer         4         0 
+          B        var    integer         4         4 
+          C        var    integer         4         8 
+          D        var       real         8        12 
+          E        var       real         8        20 
+          F        var       real         8        28 
+________________________________________________________ 
+ STATIC STORAGE REQUIRED is 36 BYTES
+________________________________________________________ 

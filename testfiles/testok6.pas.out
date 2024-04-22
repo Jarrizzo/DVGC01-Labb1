@@ -1,0 +1,32 @@
+program testok6(input, output);
+var id, number, assign: integer;
+
+begin
+id := (number + assign) * 2  
+end.
+
+________________________________________________________ 
+ THE PROGRAM TEXT
+________________________________________________________ 
+program testok6(input, output);
+var id, number, assign: integer;
+
+begin
+id := (number + assign) * 2  
+end.
+$
+________________________________________________________ 
+PARSE SUCCESSFUL! 
+________________________________________________________ 
+________________________________________________________ 
+ THE SYMBOL TABLE
+________________________________________________________ 
+       NAME       ROLE       TYPE      SIZE      ADDR     
+________________________________________________________ 
+    testok6    program    program        12         0 
+         id        var    integer         4         0 
+     number        var    integer         4         4 
+     assign        var    integer         4         8 
+________________________________________________________ 
+ STATIC STORAGE REQUIRED is 12 BYTES
+________________________________________________________ 

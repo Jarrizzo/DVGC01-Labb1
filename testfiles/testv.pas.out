@@ -1,0 +1,35 @@
+program testv (input, output);
+var A, B, C: integer;
+
+begin
+ A := B  C * 2  
+end.
+
+________________________________________________________ 
+ THE PROGRAM TEXT
+________________________________________________________ 
+program testv (input, output);
+var A, B, C: integer;
+
+begin
+ A := B  C * 2  
+end.
+$
+________________________________________________________ 
+SYNTAX:   Symbol expected end found C 
+SYNTAX:   Symbol expected . found C 
+SYNTAX:   Extra symbols after end of parse! 
+          C * 2 end . 
+________________________________________________________ 
+________________________________________________________ 
+ THE SYMBOL TABLE
+________________________________________________________ 
+       NAME       ROLE       TYPE      SIZE      ADDR     
+________________________________________________________ 
+      testv    program    program        12         0 
+          A        var    integer         4         0 
+          B        var    integer         4         4 
+          C        var    integer         4         8 
+________________________________________________________ 
+ STATIC STORAGE REQUIRED is 12 BYTES
+________________________________________________________ 
