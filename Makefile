@@ -8,4 +8,3 @@ make:driver.c parser.c
 
 	gcc -Wall -o parser driver.c parser.c keytoktab.c lexer.c symtab.c optab.c
 	clear
-	./parser <testfiles/fun5.pas
